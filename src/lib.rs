@@ -105,6 +105,13 @@ pub use crate::rpc::{KeyValue, ResponseHeader};
 #[cfg_attr(docsrs, doc(cfg(feature = "tls")))]
 pub use tonic::transport::{Certificate, ClientTlsConfig as TlsOptions, Identity};
 
+#[cfg(feature = "tls")]
+#[cfg_attr(docsrs, doc(cfg(feature = "tls")))]
+pub mod reexport {
+    pub use rustls;
+    pub use webpki;
+}
+
 /// Exposes internal protobuf representations used to create regular public response types.
 #[cfg(feature = "pub-response-field")]
 #[cfg_attr(docsrs, doc(cfg(feature = "pub-response-field")))]
