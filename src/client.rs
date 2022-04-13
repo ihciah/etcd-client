@@ -135,6 +135,9 @@ impl Client {
             }
         };
 
+        let tcp_keep_alive = options.as_ref().and_then(|options| options.tcp_keep_alive);
+        endpoint = endpoint.tcp_keepalive(tcp_keep_alive);
+
         let keep_alive = options.as_ref().and_then(|options| options.keep_alive);
         if let Some((interval, timeout)) = keep_alive {
             endpoint = endpoint
@@ -637,6 +640,8 @@ impl Client {
 pub struct ConnectOptions {
     /// user is a pair values of name and password
     user: Option<(String, String)>,
+    /// Tcp keep-alive
+    tcp_keep_alive: Option<Duration>,
     /// HTTP2 keep-alive: (keep_alive_interval, keep_alive_timeout)
     keep_alive: Option<(Duration, Duration)>,
     /// Apply a timeout to each gRPC request.
@@ -664,6 +669,13 @@ impl ConnectOptions {
         self
     }
 
+    /// Enable tcp keep-alive.
+    #[inline]
+    pub fn with_tcp_keep_alive(mut self, timeout: Duration) -> Self {
+        self.tcp_keep_alive = Some(timeout);
+        self
+    }
+
     /// Enable HTTP2 keep-alive with `interval` and `timeout`.
     #[inline]
     pub fn with_keep_alive(mut self, interval: Duration, timeout: Duration) -> Self {
@@ -683,6 +695,7 @@ impl ConnectOptions {
     pub const fn new() -> Self {
         ConnectOptions {
             user: None,
+            tcp_keep_alive: None,
             keep_alive: None,
             timeout: None,
             #[cfg(feature = "tls")]
